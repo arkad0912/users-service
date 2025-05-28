@@ -4,6 +4,6 @@ import "gorm.io/gorm"
 
 type User struct {
 	gorm.Model
-	Email string `gorm:"type:varchar(100);"`
-	Pass  string `gorm:"type:varchar(100);"`
+	ID    uint   `gorm:"primaryKey"`
+	Email string `gorm:"unique;not null"`
 }
