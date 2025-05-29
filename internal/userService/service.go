@@ -9,15 +9,10 @@ func NewUserService(repo UserRepository) *UserService {
 }
 
 func (s *UserService) CreateUser(user *User) (*User, error) {
-	err := s.repo.CreateUser(user)
-	if err != nil {
+	if err := s.repo.CreateUser(user); err != nil {
 		return nil, err
 	}
 	return user, nil
-}
-
-func (s *UserService) GetUsers() ([]User, error) {
-	return s.repo.GetUsers()
 }
 
 func (s *UserService) GetUserByID(id uint) (*User, error) {
@@ -25,13 +20,16 @@ func (s *UserService) GetUserByID(id uint) (*User, error) {
 }
 
 func (s *UserService) UpdateUser(id uint, user *User) (*User, error) {
-	err := s.repo.UpdateUser(id, user)
-	if err != nil {
+	if err := s.repo.UpdateUser(id, user); err != nil {
 		return nil, err
 	}
-	return s.repo.GetUserByID(id)
+	return s.repo.GetUserByID(id) // Возвращаем обновлённого пользователя
 }
 
 func (s *UserService) DeleteUser(id uint) error {
 	return s.repo.DeleteUser(id)
+}
+
+func (s *UserService) GetUsers() ([]User, error) {
+	return s.repo.GetUsers()
 }

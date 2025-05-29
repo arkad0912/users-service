@@ -7,6 +7,7 @@ import (
 	"github.com/arkad0912/user-service/internal/userService"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"gorm.io/gorm"
 )
 
 type Handler struct {
@@ -20,7 +21,8 @@ func NewUserHandlers(svc *userService.UserService) *Handler {
 
 func (h *Handler) CreateUser(ctx context.Context, req *userpb.CreateUserRequest) (*userpb.CreateUserResponse, error) {
 	user := &userService.User{
-		Email: req.GetEmail(),
+		Email:    req.GetEmail(),
+		Password: req.GetPassword(),
 	}
 
 	createdUser, err := h.svc.CreateUser(user)
@@ -30,8 +32,9 @@ func (h *Handler) CreateUser(ctx context.Context, req *userpb.CreateUserRequest)
 
 	return &userpb.CreateUserResponse{
 		User: &userpb.User{
-			Id:    uint32(createdUser.ID),
-			Email: createdUser.Email,
+			Id:       uint32(createdUser.ID),
+			Email:    createdUser.Email,
+			Password: createdUser.Password, // Теперь возвращаем пароль
 		},
 	}, nil
 }
@@ -39,29 +42,32 @@ func (h *Handler) CreateUser(ctx context.Context, req *userpb.CreateUserRequest)
 func (h *Handler) GetUser(ctx context.Context, req *userpb.User) (*userpb.User, error) {
 	user, err := h.svc.GetUserByID(uint(req.GetId()))
 	if err != nil {
-		return nil, status.Error(codes.NotFound, "user not found")
+		if err == gorm.ErrRecordNotFound {
+			return nil, status.Error(codes.NotFound, "user not found")
+		}
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	return &userpb.User{
-		Id:    uint32(user.ID),
-		Email: user.Email,
+		Id:       uint32(user.ID),
+		Email:    user.Email,
+		Password: user.Password, // Теперь возвращаем пароль
 	}, nil
 }
 
 func (h *Handler) UpdateUser(ctx context.Context, req *userpb.UpdateUserRequest) (*userpb.UpdateUserResponse, error) {
-	user := &userService.User{
-		Email: req.GetNewEmail(),
-	}
+	updateData := &userService.User{}
 
-	updatedUser, err := h.svc.UpdateUser(uint(req.GetId()), user)
+	updatedUser, err := h.svc.UpdateUser(uint(req.GetId()), updateData)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	return &userpb.UpdateUserResponse{
 		User: &userpb.User{
-			Id:    uint32(updatedUser.ID),
-			Email: updatedUser.Email,
+			Id:       uint32(updatedUser.ID),
+			Email:    updatedUser.Email,
+			Password: updatedUser.Password,
 		},
 	}, nil
 }

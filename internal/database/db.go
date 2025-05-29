@@ -18,7 +18,12 @@ func InitDB() {
 		log.Fatal("Failed to connect to database:", err)
 	}
 
-	// Автомиграция создаст таблицу со всеми необходимыми полями
+	// Удаляем таблицу если существует
+	if err := DB.Migrator().DropTable(&userService.User{}); err != nil {
+		log.Println("Warning: could not drop table:", err)
+	}
+
+	// Создаем таблицу заново
 	if err := DB.AutoMigrate(&userService.User{}); err != nil {
 		log.Fatal("Failed to auto-migrate models:", err)
 	}

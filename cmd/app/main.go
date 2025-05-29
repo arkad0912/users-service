@@ -9,13 +9,9 @@ import (
 )
 
 func main() {
-	// Инициализация базы данных
-	database.InitDB()
-
-	// Репозитории и сервисы для пользователей
-	userRepo := userService.NewUserRepository(database.DB)
-	userService := userService.NewUserService(userRepo)
-	userHandler := grpc.NewUserHandlers(userService)
-
-	grpc.RunServer(userHandler, ":50051")
+	database.InitDB()                                      // 1. Подключение к БД
+	userRepo := userService.NewUserRepository(database.DB) // 2. Репозиторий
+	userService := userService.NewUserService(userRepo)    // 3. Сервис
+	userHandler := grpc.NewUserHandlers(userService)       // 4. gRPC обработчики
+	grpc.RunServer(userHandler, ":50051")                  // 5. Запуск сервера
 }
