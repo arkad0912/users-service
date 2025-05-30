@@ -23,7 +23,7 @@ func (s *UserService) UpdateUser(id uint, user *User) (*User, error) {
 	if err := s.repo.UpdateUser(id, user); err != nil {
 		return nil, err
 	}
-	return s.repo.GetUserByID(id) // Возвращаем обновлённого пользователя
+	return s.repo.GetUserByID(id)
 }
 
 func (s *UserService) DeleteUser(id uint) error {

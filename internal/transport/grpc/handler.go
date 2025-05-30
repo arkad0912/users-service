@@ -56,9 +56,10 @@ func (h *Handler) GetUser(ctx context.Context, req *userpb.User) (*userpb.User, 
 }
 
 func (h *Handler) UpdateUser(ctx context.Context, req *userpb.UpdateUserRequest) (*userpb.UpdateUserResponse, error) {
-	updateData := &userService.User{}
-
-	updatedUser, err := h.svc.UpdateUser(uint(req.GetId()), updateData)
+	updatedUser, err := h.svc.UpdateUser(uint(req.GetId()), &userService.User{
+		Email:    req.GetNewEmail(),
+		Password: req.GetNewPassword(),
+	})
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -94,8 +95,9 @@ func (h *Handler) ListUsers(ctx context.Context, req *userpb.ListUsersRequest) (
 	var pbUsers []*userpb.User
 	for _, u := range users {
 		pbUsers = append(pbUsers, &userpb.User{
-			Id:    uint32(u.ID),
-			Email: u.Email,
+			Id:       uint32(u.ID),
+			Email:    u.Email,
+			Password: u.Password,
 		})
 	}
 
