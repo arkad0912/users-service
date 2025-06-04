@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"errors"
 
 	userpb "github.com/arkad0912/project-protos/proto/user"
 	"github.com/arkad0912/user-service/internal/userService"
@@ -39,19 +40,21 @@ func (h *Handler) CreateUser(ctx context.Context, req *userpb.CreateUserRequest)
 	}, nil
 }
 
-func (h *Handler) GetUser(ctx context.Context, req *userpb.User) (*userpb.User, error) {
+func (h *Handler) GetUser(ctx context.Context, req *userpb.GetUserRequest) (*userpb.GetUserResponse, error) {
 	user, err := h.svc.GetUserByID(uint(req.GetId()))
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, status.Error(codes.NotFound, "user not found")
 		}
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &userpb.User{
-		Id:       uint32(user.ID),
-		Email:    user.Email,
-		Password: user.Password, // Теперь возвращаем пароль
+	return &userpb.GetUserResponse{
+		User: &userpb.User{
+			Id:       uint32(user.ID),
+			Email:    user.Email,
+			Password: user.Password,
+		},
 	}, nil
 }
 

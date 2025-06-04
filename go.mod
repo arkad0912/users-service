@@ -22,7 +22,7 @@ require (
 )
 
 require (
-	github.com/arkad0912/project-protos v1.0.2
+	github.com/arkad0912/project-protos v1.0.4
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	golang.org/x/text v0.22.0 // indirect

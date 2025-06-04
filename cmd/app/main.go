@@ -15,3 +15,5 @@ func main() {
 	userHandler := grpc.NewUserHandlers(userService)       // 4. gRPC обработчики
 	grpc.RunServer(userHandler, ":50051")                  // 5. Запуск сервера
 }
+
+//docker run --name postgres_db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=yourpassword -e POSTGRES_DB=main -p 5432:5432 -d postgres
